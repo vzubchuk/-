@@ -1,0 +1,65 @@
+import numpy as np
+from math import factorial
+import matplotlib.pyplot as plt
+# задані точки
+x = np.array ([1.34, 1.345, 1.35, 1.355, 1.36, 1.365, 1.37, 1.375, 1.38, 1.385, 1.39])
+y = np.array([4.2556, 4.3532, 4.4552, 4.5618, 4.6734, 4.7903, 4.9130, 5.0419, 5.1774, 5.3201, 5.4706])
+# перша інтерполяційна формула
+def first_interpolation(x, y, x0):
+    n = len(x)
+    f = np.zeros((n, n))
+    f[:, 0] = y
+    for j in range(1, n):
+        for i in range(n - j):
+            f[i, j] = (f[i+1, j-1] - f[i, j-1]) / (x[i+j] - x[i])
+    ans = 0
+    for j in range(n):
+        prod = f[0, j]
+        for i in range(j):
+            prod *= (x0 - x[i])
+        ans += prod
+        
+    return ans
+
+# друга інтерполяційна формула
+def second_interpolation(x, y, x0):
+    n = len(x)
+    f = np.zeros((n, n))
+    f[:, 0] = y
+    for j in range(1, n):
+        for i in range(n - j):
+            f[i, j] = (f[i+1, j-1] - f[i, j-1]) / (x[i+j] - x[i])
+    ans = f[0, 0]
+    for j in range(1, n):
+        prod = f[0, j]
+        for i in range(j):
+            prod *= (x0 - x[i])
+        ans += prod
+    return ans
+
+x1 = np.array([1.361, 1.346, 1.342])
+
+print("Перша інтерполяційна формула : ")
+for i in range(len(x1)):
+    y1 = first_interpolation(x, y, x1[i])
+    print(f"f({x1[i]}) = {y1}")
+    
+x2 = np.array([1.394, 1.381, 1.386])
+print("Друга інтерполяційна формула : ")
+for i in range(len(x2)):
+    y2 = second_interpolation(x, y, x2[i])
+    print(f"f({x2[i]}) = {y2}")
+
+# будуємо графік інтерполяційної функції
+xx = np.linspace(np.min(x), np.max(x), 100)
+yy = np.zeros_like(xx)
+for i in range(len(xx)):
+    yy[i] = second_interpolation(x, y, xx[i])
+plt.plot(x, y, 'o', label='Дані точки')
+plt.plot(xx, yy, label='багаточлен Н*ютона')
+plt.title("Графік інтерполяційної функції Ньютона")
+plt.xlabel("x")
+plt.ylabel("y")
+plt.legend()
+plt.show()
+
